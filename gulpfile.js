@@ -54,7 +54,7 @@ function js_compat() {
       file.contents = Buffer.from(_crt(file.contents.toString()));
     }))
     .pipe(sourcemaps.init({ loadMaps: false, debug }))
-    .pipe(babel({ presets: [ [ "@babel/preset-env", { targets: 'defaults' } ] ] }))
+    .pipe(babel({ presets: [ [ "@babel/preset-env", { targets: 'defaults' } ] ] }))
     .pipe(rename(function(path) {
       path.dirname = _dst(path.dirname, 'src', 'dist');
       path.basename = 'ensemble-' + path.basename.toLowerCase() + '-compat';
@@ -80,7 +80,8 @@ function css() {
     .pipe(sass({ outputStyle: 'nested' }).on('error', sass.logError))
     .pipe(rename(function(path) {
       path.dirname = _dst(path.dirname, 'src', 'dist');
-      path.basename = 'ensemble-' + path.basename.toLowerCase();
+      path.dirname = path.dirname.replace('scss', 'css');
+      path.basename = 'ensemble-' + path.basename;
     }))
     .pipe(sourcemaps.write('.', { includeContent: false }))
     .pipe(dest(temp));
@@ -92,7 +93,8 @@ function css_compat() {
     .pipe(sass({ outputStyle: 'nested' }).on('error', sass.logError))
     .pipe(rename(function(path) {
       path.dirname = _dst(path.dirname, 'src', 'dist');
-      path.basename = 'ensemble-' + path.basename.toLowerCase() + '-compat';
+      path.dirname = path.dirname.replace('scss', 'css');
+      path.basename = 'ensemble-' + path.basename + '-compat';
     }))
     .pipe(sourcemaps.write('.', { includeContent: false }))
     .pipe(dest(temp));
@@ -104,8 +106,21 @@ function css_uglify() {
     .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
     .pipe(rename(function(path) {
       path.dirname = _dst(path.dirname, 'src', 'dist');
-      path.basename = 'ensemble-' + path.basename.toLowerCase();
+      path.dirname = path.dirname.replace('scss', 'css');
+      path.basename = 'ensemble-' + path.basename;
       path.extname = '.min' + path.extname;
+    }))
+    .pipe(sourcemaps.write('.', { includeContent: false }))
+    .pipe(dest(temp));
+}
+
+function demo_css() {
+  return src('./ensemble-stack-d1/misc/demo/*.scss')
+    .pipe(sourcemaps.init({ loadMaps: false, debug }))
+    .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
+    .pipe(rename(function(path) {
+      path.dirname += '/ensemble-' + path.basename + '/demo';
+      path.basename = 'demo-ensemble-' + path.basename;
     }))
     .pipe(sourcemaps.write('.', { includeContent: false }))
     .pipe(dest(temp));
@@ -120,5 +135,6 @@ function watcher() {
 const build = parallel([series([js, js_uglify]), parallel([css, css_uglify])]);
 
 exports.default = build;
-exports.compat = parallel([series([js_compat, js_uglify]), parallel([css_compat, css_uglify])]);
+exports.compat = parallel([series([js_compat, js_uglify]), parallel([/*css_compat, */css_uglify])]);
 exports.watcher = watcher;
+exports.demo = demo_css;

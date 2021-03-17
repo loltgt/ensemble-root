@@ -7,6 +7,7 @@
     "build": "BASEPATH=**/ ./node_modules/.bin/gulp",
     "build-compat": "BASEPATH=**/ ./node_modules/.bin/gulp compat",
     "watch": "BASEPATH=**/ ./node_modules/.bin/gulp watch",
+    "demo": "./node_modules/.bin/gulp demo",
     "clone-deps-all": "cd ./ensemble; rm -R node_modules; cp ../node_modules node_modules; cd ../ensemble-stack-d1; rm -R node_modules; cp ../node_modules node_modules; cd ../ensemble-modal; rm -R node_modules; cp ../node_modules node_modules; cd ../ensemble-lightbox; rm -R node_modules; cp ../node_modules node_modules; cd ../ensemble-social-share; rm -R node_modules; cp ../node_modules node_modules",
     "git-push-all": "cd ./ensemble; git push origin master; cd ../ensemble-stack-d1; git push origin master; cd ../ensemble-modal; git push origin master; cd ../ensemble-lightbox; git push origin master; cd ../ensemble-social-share; git push origin master"
   },
