@@ -1,11 +1,14 @@
 'use strict';
 
 const { series, parallel, watch, src, dest } = require('gulp');
+const tap = require('gulp-tap');
 const rename = require('gulp-rename');
 const babel = require('gulp-babel');
 const sass = require('gulp-sass');
 const terser = require('gulp-terser');
 const sourcemaps = require('gulp-sourcemaps');
+
+const rollup = require('@rbnlffl/gulp-rollup');
 
 const basepath = process.env.BASEPATH || '';
 const debug = process.env.DEBUG || true;
@@ -19,10 +22,21 @@ function _dst(dir, src, dst) {
   return dir.indexOf('/') === -1 ? (dir + '/' + dst) : dir.replace(src, dst);
 }
 
+function _crt(contents) {
+  contents = contents.replace('Object.defineProperty(exports, \'__esModule\', { value: true });', '')
+                     .replace(/exports\.([^ ]+) = [^;]+;/, 'export { $1 };')
+                     .replace(/exports\.([^ ]+) = [^;]+;/, 'export { $1 };');
+
+  return contents;
+}
 
 
 function js() {
   return src([basepath + 'src/js/**/*.js', /*basepath + 'index.js',*/ '!node_modules/**/*.js'])
+    .pipe(rollup(null, { format: 'cjs' }))
+    .pipe(tap(function(file) {
+      file.contents = Buffer.from(_crt(file.contents.toString()));
+    }))
     .pipe(sourcemaps.init({ loadMaps: false, debug }))
     .pipe(babel())
     .pipe(rename(function(path) {
@@ -35,8 +49,12 @@ function js() {
 
 function js_compat() {
   return src([basepath + 'src/js/**/*.js', /*basepath + 'index.js',*/ '!node_modules/**/*.js'])
+    .pipe(rollup(null, { format: 'cjs' }))
+    .pipe(tap(function(file) {
+      file.contents = Buffer.from(_crt(file.contents.toString()));
+    }))
     .pipe(sourcemaps.init({ loadMaps: false, debug }))
-    .pipe(babel({ targets: '' }))
+    .pipe(babel({ presets: [ [ "@babel/preset-env", { targets: 'defaults' } ] ] }))
     .pipe(rename(function(path) {
       path.dirname = _dst(path.dirname, 'src', 'dist');
       path.basename = 'ensemble-' + path.basename.toLowerCase() + '-compat';
