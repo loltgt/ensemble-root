@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "build": "BASEPATH=**/ ./node_modules/.bin/gulp",
+    "build-js": "BASEPATH=**/ ./node_modules/.bin/gulp build_js",
+    "build-css": "BASEPATH=**/ ./node_modules/.bin/gulp build_css",
     "build-compat": "BASEPATH=**/ ./node_modules/.bin/gulp compat",
+    "build-compat-js": "BASEPATH=**/ ./node_modules/.bin/gulp compat_js",
+    "build-compat-css": "BASEPATH=**/ ./node_modules/.bin/gulp compat_css",
     "watch": "BASEPATH=**/ ./node_modules/.bin/gulp watch",
     "demo": "./node_modules/.bin/gulp demo",
     "clone-deps-all": "cd ./ensemble; rm -R node_modules; cp ../node_modules node_modules; cd ../ensemble-stack-d1; rm -R node_modules; cp ../node_modules node_modules; cd ../ensemble-modal; rm -R node_modules; cp ../node_modules node_modules; cd ../ensemble-lightbox; rm -R node_modules; cp ../node_modules node_modules; cd ../ensemble-social-share; rm -R node_modules; cp ../node_modules node_modules",

@@ -94,30 +94,13 @@ function js_uglify() {
 }
 
 function css() {
-  return src([BASEPATH + 'src/scss/**/*.scss', '!node_modules/**/*.scss'])
+  return src([BASEPATH + 'src/scss/**/*.scss', '!**/*_compat.scss', '!node_modules/**/*.scss'])
     .pipe(sourcemaps.init({ loadMaps: false }))
     .pipe(sass({ outputStyle: 'nested' }).on('error', sass.logError))
     .pipe(rename(function(sourcePath) {
       sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
       sourcePath.dirname = sourcePath.dirname.replace('scss', 'css');
       sourcePath.basename = 'ensemble-' + sourcePath.basename;
-    }))
-    .pipe(sourcemaps.mapSources(function(sourcePath, file) {
-      const base = path.relative(file.cwd, file.dirname);
-      return path.relative(base, sourcePath);
-    }))
-    .pipe(sourcemaps.write('.', { includeContent: false }))
-    .pipe(dest(TEMP));
-}
-
-function css_compat() {
-  return src([BASEPATH + 'src/scss/**/*.scss', '!node_modules/**/*.scss'])
-    .pipe(sourcemaps.init({ loadMaps: false }))
-    .pipe(sass({ outputStyle: 'nested' }).on('error', sass.logError))
-    .pipe(rename(function(sourcePath) {
-      sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
-      sourcePath.dirname = sourcePath.dirname.replace('scss', 'css');
-      sourcePath.basename = 'ensemble-' + sourcePath.basename + '-compat';
     }))
     .pipe(sourcemaps.mapSources(function(sourcePath, file) {
       const base = path.relative(file.cwd, file.dirname);
@@ -128,13 +111,48 @@ function css_compat() {
 }
 
 function css_uglify() {
-  return src([BASEPATH + 'src/scss/**/*.scss', '!node_modules/**/*.scss'])
+  return src([BASEPATH + 'src/scss/**/*.scss', '!**/*_compat.scss', '!node_modules/**/*.scss'])
     .pipe(sourcemaps.init({ loadMaps: false }))
     .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
     .pipe(rename(function(sourcePath) {
       sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
       sourcePath.dirname = sourcePath.dirname.replace('scss', 'css');
       sourcePath.basename = 'ensemble-' + sourcePath.basename;
+      sourcePath.extname = '.min' + sourcePath.extname;
+    }))
+    .pipe(sourcemaps.mapSources(function(sourcePath, file) {
+      const base = path.relative(file.cwd, file.dirname);
+      return path.relative(base, sourcePath);
+    }))
+    .pipe(sourcemaps.write('.', { includeContent: false }))
+    .pipe(dest(TEMP));
+}
+
+function css_compat() {
+  return src([BASEPATH + 'src/scss/**/*_compat.scss', '!node_modules/**/*.scss'])
+    .pipe(sourcemaps.init({ loadMaps: false }))
+    .pipe(sass({ outputStyle: 'nested' }).on('error', sass.logError))
+    .pipe(rename(function(sourcePath) {
+      sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
+      sourcePath.dirname = sourcePath.dirname.replace('scss', 'css');
+      sourcePath.basename = 'ensemble-' + sourcePath.basename.replace('_', '-');
+    }))
+    .pipe(sourcemaps.mapSources(function(sourcePath, file) {
+      const base = path.relative(file.cwd, file.dirname);
+      return path.relative(base, sourcePath);
+    }))
+    .pipe(sourcemaps.write('.', { includeContent: false }))
+    .pipe(dest(TEMP));
+}
+
+function css_compat_uglify() {
+  return src([BASEPATH + 'src/scss/**/*_compat.scss', '!node_modules/**/*.scss'])
+    .pipe(sourcemaps.init({ loadMaps: false }))
+    .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
+    .pipe(rename(function(sourcePath) {
+      sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
+      sourcePath.dirname = sourcePath.dirname.replace('scss', 'css');
+      sourcePath.basename = 'ensemble-' + sourcePath.basename.replace('_', '-');
       sourcePath.extname = '.min' + sourcePath.extname;
     }))
     .pipe(sourcemaps.mapSources(function(sourcePath, file) {
@@ -158,14 +176,24 @@ function demo_css() {
 }
 
 function watcher() {
-  watch(BASEPATH + 'src/scss/**/*.scss', series(css, css_uglify));
-  watch(BASEPATH + 'src/js/**/*.js', series(js, js_uglify));
+  watch(BASEPATH + 'src/scss/**/*.scss', build_css);
+  watch(BASEPATH + 'src/js/**/*.js', build_js);
 }
 
 
-const build = parallel([series([js, js_uglify]), parallel([css, css_uglify])]);
+const build_js = series([js, js_uglify]);
+const build_css = parallel([css, css_uglify]);
+const compat_js = series([js_compat, js_uglify]);
+const compat_css = parallel([css_compat, css_compat_uglify]);
+
+const build = parallel(build_js, build_css);
+const compat = parallel(compat_js, compat_css);
 
 exports.default = build;
-exports.compat = parallel([series([js_compat, js_uglify]), parallel([/*css_compat, */css_uglify])]);
+exports.build_js = build_js;
+exports.build_css = build_css;
+exports.compat = compat;
+exports.compat_js = compat_js;
+exports.compat_css = compat_css;
 exports.watcher = watcher;
 exports.demo = demo_css;
