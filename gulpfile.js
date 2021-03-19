@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const { readFileSync } = require('fs');
 
 const { series, parallel, watch, src, dest } = require('gulp');
 const tap = require('gulp-tap');
@@ -65,7 +66,21 @@ function js_compat() {
     .pipe(tap(function(file) {
       file.contents = Buffer.from(_crt(file.contents.toString()));
     }))
-    .pipe(babel({ presets: [ [ '@babel/preset-env', { targets: 'defaults' } ] ] })) // sourcemap source reset
+    .pipe(babel({
+      presets: [
+        [ '@babel/preset-env', { targets: 'defaults' } ]
+      ],
+      plugins: [
+        ["@babel/plugin-transform-object-assign"]
+      ]
+    })) // sourcemap source reset
+    .pipe(tap(function(file) {
+      let contents = file.contents.toString();
+      const missing_regeneratorRuntime = readFileSync('./node_modules/regenerator-runtime/runtime.js');
+      contents = contents.replace('  function _asyncToGenerator(fn)', '\n\n' + missing_regeneratorRuntime + '\n\n  function _asyncToGenerator(fn)');
+
+      file.contents = Buffer.from(contents);
+    }))
     .pipe(rename(function(sourcePath) {
       sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
       sourcePath.basename = 'ensemble-' + _cth(sourcePath.basename) + '-compat';

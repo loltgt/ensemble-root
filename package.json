@@ -21,6 +21,7 @@
   "devDependencies": {
     "@babel/cli": "^7.13.10",
     "@babel/plugin-transform-modules-umd": "^7.13.0",
+    "@babel/plugin-transform-object-assign": "^7.12.13",
     "@babel/preset-env": "^7.13.10",
     "@rbnlffl/gulp-rollup": "^0.1.1",
     "gulp": "^4.0.2",
@@ -30,6 +31,7 @@
     "gulp-sourcemaps": "^3.0.0",
     "gulp-tap": "^2.0.0",
     "gulp-terser": "^2.0.1",
-    "node-sass": "^5.0.0"
+    "node-sass": "^5.0.0",
+    "regenerator-runtime": "^0.13.7"
   }
 }
