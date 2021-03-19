@@ -40,7 +40,7 @@ function _cth(name) {
 
 function js() {
   return src([BASEPATH + 'src/js/**/*.js', '!node_modules/**/*.js'])
-    .pipe(sourcemaps.init())
+    // .pipe(sourcemaps.init())
     .pipe(rollup(null, { sourcemap: true, format: 'cjs' }))
     .pipe(tap(function(file) {
       file.contents = Buffer.from(_crt(file.contents.toString()));
@@ -50,17 +50,17 @@ function js() {
       sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
       sourcePath.basename = 'ensemble-' + _cth(sourcePath.basename);
     }))
-    .pipe(sourcemaps.mapSources(function(sourcePath, file) {
-      const base = path.relative(file.cwd, file.dirname);
-      return path.relative(base, sourcePath);
-    }))
-    .pipe(sourcemaps.write('.', { includeContent: false }))
+    // .pipe(sourcemaps.mapSources(function(sourcePath, file) {
+    //   const base = path.relative(file.cwd, file.dirname);
+    //   return path.relative(base, sourcePath);
+    // }))
+    // .pipe(sourcemaps.write('.', { includeContent: false }))
     .pipe(dest(TEMP));
 }
 
 function js_compat() {
   return src([BASEPATH + 'src/js/**/*.js', '!node_modules/**/*.js'])
-    .pipe(sourcemaps.init())
+    // .pipe(sourcemaps.init())
     .pipe(rollup(null, { sourcemap: true, format: 'cjs' }))
     .pipe(tap(function(file) {
       file.contents = Buffer.from(_crt(file.contents.toString()));
@@ -70,49 +70,49 @@ function js_compat() {
       sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
       sourcePath.basename = 'ensemble-' + _cth(sourcePath.basename) + '-compat';
     }))
-    .pipe(sourcemaps.mapSources(function(sourcePath, file) {
-      const base = path.relative(file.cwd, file.dirname);
-      return path.relative(base, sourcePath);
-    }))
-    .pipe(sourcemaps.write('.', { includeContent: false }))
+    // .pipe(sourcemaps.mapSources(function(sourcePath, file) {
+    //   const base = path.relative(file.cwd, file.dirname);
+    //   return path.relative(base, sourcePath);
+    // }))
+    // .pipe(sourcemaps.write('.', { includeContent: false }))
     .pipe(dest(TEMP));
 }
 
 function js_uglify() {
   return src([BASEPATH + 'dist/js/**/*.js', '!**/*.min.js', '!node_modules/**/*.js'])
-    .pipe(sourcemaps.init())
+    // .pipe(sourcemaps.init())
     .pipe(terser())
     .pipe(rename(function(sourcePath) {
       sourcePath.extname = '.min' + sourcePath.extname;
     }))
-    .pipe(sourcemaps.mapSources(function(sourcePath, file) {
-      const base = path.relative(file.cwd, file.dirname);
-      return path.relative(base, sourcePath);
-    }))
-    .pipe(sourcemaps.write('.', { includeContent: false }))
+    // .pipe(sourcemaps.mapSources(function(sourcePath, file) {
+    //   const base = path.relative(file.cwd, file.dirname);
+    //   return path.relative(base, sourcePath);
+    // }))
+    // .pipe(sourcemaps.write('.', { includeContent: false }))
     .pipe(dest(TEMP));
 }
 
 function css() {
   return src([BASEPATH + 'src/scss/**/*.scss', '!**/*_compat.scss', '!node_modules/**/*.scss'])
-    .pipe(sourcemaps.init())
+    // .pipe(sourcemaps.init())
     .pipe(sass({ outputStyle: 'nested' }).on('error', sass.logError))
     .pipe(rename(function(sourcePath) {
       sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
       sourcePath.dirname = sourcePath.dirname.replace('scss', 'css');
       sourcePath.basename = 'ensemble-' + sourcePath.basename;
     }))
-    .pipe(sourcemaps.mapSources(function(sourcePath, file) {
-      const base = path.relative(file.cwd, file.dirname);
-      return path.relative(base, sourcePath);
-    }))
-    .pipe(sourcemaps.write('.', { includeContent: false }))
+    // .pipe(sourcemaps.mapSources(function(sourcePath, file) {
+    //   const base = path.relative(file.cwd, file.dirname);
+    //   return path.relative(base, sourcePath);
+    // }))
+    // .pipe(sourcemaps.write('.', { includeContent: false }))
     .pipe(dest(TEMP));
 }
 
 function css_uglify() {
   return src([BASEPATH + 'src/scss/**/*.scss', '!**/*_compat.scss', '!node_modules/**/*.scss'])
-    .pipe(sourcemaps.init())
+    // .pipe(sourcemaps.init())
     .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
     .pipe(rename(function(sourcePath) {
       sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
@@ -120,34 +120,34 @@ function css_uglify() {
       sourcePath.basename = 'ensemble-' + sourcePath.basename;
       sourcePath.extname = '.min' + sourcePath.extname;
     }))
-    .pipe(sourcemaps.mapSources(function(sourcePath, file) {
-      const base = path.relative(file.cwd, file.dirname);
-      return path.relative(base, sourcePath);
-    }))
-    .pipe(sourcemaps.write('.', { includeContent: false }))
+    // .pipe(sourcemaps.mapSources(function(sourcePath, file) {
+    //   const base = path.relative(file.cwd, file.dirname);
+    //   return path.relative(base, sourcePath);
+    // }))
+    // .pipe(sourcemaps.write('.', { includeContent: false }))
     .pipe(dest(TEMP));
 }
 
 function css_compat() {
   return src([BASEPATH + 'src/scss/**/*_compat.scss', '!node_modules/**/*.scss'])
-    .pipe(sourcemaps.init())
+    // .pipe(sourcemaps.init())
     .pipe(sass({ outputStyle: 'nested' }).on('error', sass.logError))
     .pipe(rename(function(sourcePath) {
       sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
       sourcePath.dirname = sourcePath.dirname.replace('scss', 'css');
       sourcePath.basename = 'ensemble-' + sourcePath.basename.replace('_', '-');
     }))
-    .pipe(sourcemaps.mapSources(function(sourcePath, file) {
-      const base = path.relative(file.cwd, file.dirname);
-      return path.relative(base, sourcePath);
-    }))
-    .pipe(sourcemaps.write('.', { includeContent: false }))
+    // .pipe(sourcemaps.mapSources(function(sourcePath, file) {
+    //   const base = path.relative(file.cwd, file.dirname);
+    //   return path.relative(base, sourcePath);
+    // }))
+    // .pipe(sourcemaps.write('.', { includeContent: false }))
     .pipe(dest(TEMP));
 }
 
 function css_compat_uglify() {
   return src([BASEPATH + 'src/scss/**/*_compat.scss', '!node_modules/**/*.scss'])
-    .pipe(sourcemaps.init())
+    // .pipe(sourcemaps.init())
     .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
     .pipe(rename(function(sourcePath) {
       sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
@@ -155,23 +155,23 @@ function css_compat_uglify() {
       sourcePath.basename = 'ensemble-' + sourcePath.basename.replace('_', '-');
       sourcePath.extname = '.min' + sourcePath.extname;
     }))
-    .pipe(sourcemaps.mapSources(function(sourcePath, file) {
-      const base = path.relative(file.cwd, file.dirname);
-      return path.relative(base, sourcePath);
-    }))
-    .pipe(sourcemaps.write('.', { includeContent: false }))
+    // .pipe(sourcemaps.mapSources(function(sourcePath, file) {
+    //   const base = path.relative(file.cwd, file.dirname);
+    //   return path.relative(base, sourcePath);
+    // }))
+    // .pipe(sourcemaps.write('.', { includeContent: false }))
     .pipe(dest(TEMP));
 }
 
 function demo_css() {
   return src('./ensemble-stack-d1/misc/demo/*.scss')
-    .pipe(sourcemaps.init())
+    // .pipe(sourcemaps.init())
     .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
     .pipe(rename(function(sourcePath) {
       sourcePath.dirname += '/ensemble-' + sourcePath.basename + '/demo';
       sourcePath.basename = 'demo-ensemble-' + sourcePath.basename;
     }))
-    .pipe(sourcemaps.write('.', { includeContent: false, sourceRoot: './ensemble-stack-d1/misc/demo' }))
+    // .pipe(sourcemaps.write('.', { includeContent: false, sourceRoot: './ensemble-stack-d1/misc/demo' }))
     .pipe(dest(TEMP));
 }
 
