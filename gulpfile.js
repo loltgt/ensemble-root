@@ -40,7 +40,7 @@ function _cth(name) {
 
 function js() {
   return src([BASEPATH + 'src/js/**/*.js', '!node_modules/**/*.js'])
-    .pipe(sourcemaps.init({ loadMaps: true }))
+    .pipe(sourcemaps.init())
     .pipe(rollup(null, { sourcemap: true, format: 'cjs' }))
     .pipe(tap(function(file) {
       file.contents = Buffer.from(_crt(file.contents.toString()));
@@ -60,7 +60,7 @@ function js() {
 
 function js_compat() {
   return src([BASEPATH + 'src/js/**/*.js', '!node_modules/**/*.js'])
-    .pipe(sourcemaps.init({ loadMaps: false }))
+    .pipe(sourcemaps.init())
     .pipe(rollup(null, { sourcemap: true, format: 'cjs' }))
     .pipe(tap(function(file) {
       file.contents = Buffer.from(_crt(file.contents.toString()));
@@ -80,7 +80,7 @@ function js_compat() {
 
 function js_uglify() {
   return src([BASEPATH + 'dist/js/**/*.js', '!**/*.min.js', '!node_modules/**/*.js'])
-    .pipe(sourcemaps.init({ loadMaps: true }))
+    .pipe(sourcemaps.init())
     .pipe(terser())
     .pipe(rename(function(sourcePath) {
       sourcePath.extname = '.min' + sourcePath.extname;
@@ -95,7 +95,7 @@ function js_uglify() {
 
 function css() {
   return src([BASEPATH + 'src/scss/**/*.scss', '!**/*_compat.scss', '!node_modules/**/*.scss'])
-    .pipe(sourcemaps.init({ loadMaps: false }))
+    .pipe(sourcemaps.init())
     .pipe(sass({ outputStyle: 'nested' }).on('error', sass.logError))
     .pipe(rename(function(sourcePath) {
       sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
@@ -112,7 +112,7 @@ function css() {
 
 function css_uglify() {
   return src([BASEPATH + 'src/scss/**/*.scss', '!**/*_compat.scss', '!node_modules/**/*.scss'])
-    .pipe(sourcemaps.init({ loadMaps: false }))
+    .pipe(sourcemaps.init())
     .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
     .pipe(rename(function(sourcePath) {
       sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
@@ -130,7 +130,7 @@ function css_uglify() {
 
 function css_compat() {
   return src([BASEPATH + 'src/scss/**/*_compat.scss', '!node_modules/**/*.scss'])
-    .pipe(sourcemaps.init({ loadMaps: false }))
+    .pipe(sourcemaps.init())
     .pipe(sass({ outputStyle: 'nested' }).on('error', sass.logError))
     .pipe(rename(function(sourcePath) {
       sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
@@ -147,7 +147,7 @@ function css_compat() {
 
 function css_compat_uglify() {
   return src([BASEPATH + 'src/scss/**/*_compat.scss', '!node_modules/**/*.scss'])
-    .pipe(sourcemaps.init({ loadMaps: false }))
+    .pipe(sourcemaps.init())
     .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
     .pipe(rename(function(sourcePath) {
       sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
@@ -165,7 +165,7 @@ function css_compat_uglify() {
 
 function demo_css() {
   return src('./ensemble-stack-d1/misc/demo/*.scss')
-    .pipe(sourcemaps.init({ loadMaps: false }))
+    .pipe(sourcemaps.init())
     .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
     .pipe(rename(function(sourcePath) {
       sourcePath.dirname += '/ensemble-' + sourcePath.basename + '/demo';
@@ -195,5 +195,5 @@ exports.build_css = build_css;
 exports.compat = compat;
 exports.compat_js = compat_js;
 exports.compat_css = compat_css;
-exports.watcher = watcher;
+exports.watch = watcher;
 exports.demo = demo_css;
