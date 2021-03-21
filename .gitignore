@@ -5,6 +5,7 @@ ensemble-stack-d1
 ensemble-modal
 ensemble-lightbox
 ensemble-social-share
+ensemble-docs
 node_modules
 out
 package-lock.json

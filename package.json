@@ -17,8 +17,10 @@
     "delete-sourcemaps-all": "find . -name *ensemble*-*.map -type f -delete",
     "docs": "rm -R ./out; ./node_modules/.bin/jsdoc ./ensemble/*.js -r; ./node_modules/.bin/jsdoc ./ensemble-stack-d1/*.js -r; ./node_modules/.bin/jsdoc ./ensemble-modal/src/js/*.js -r; ./node_modules/.bin/jsdoc ./ensemble-lightbox/src/js/*.js -r; ./node_modules/.bin/jsdoc ./ensemble-social-share/src/js/*.js -r"
   },
+  "repository": "git+https://github.com/loltgt/ensemble-root.git",
   "author": "Leonardo Laureti",
   "license": "MIT",
+  "homepage": "https://github.com/loltgt/ensemble-root#readme",
   "devDependencies": {
     "@babel/cli": "^7.13.10",
     "@babel/plugin-transform-modules-umd": "^7.13.0",
@@ -33,6 +35,7 @@
     "gulp-tap": "^2.0.0",
     "gulp-terser": "^2.0.1",
     "jsdoc": "^3.6.6",
+    "jsdoc-to-markdown": "^7.0.0",
     "node-sass": "^5.0.0",
     "regenerator-runtime": "^0.13.7"
   }
