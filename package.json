@@ -14,7 +14,8 @@
     "demo": "./node_modules/.bin/gulp demo",
     "clone-deps-all": "cd ./ensemble; rm -R node_modules; cp ../node_modules node_modules; cd ../ensemble-stack-d1; rm -R node_modules; cp ../node_modules node_modules; cd ../ensemble-modal; rm -R node_modules; cp ../node_modules node_modules; cd ../ensemble-lightbox; rm -R node_modules; cp ../node_modules node_modules; cd ../ensemble-social-share; rm -R node_modules; cp ../node_modules node_modules",
     "git-push-all": "cd ./ensemble; git push origin master; cd ../ensemble-stack-d1; git push origin master; cd ../ensemble-modal; git push origin master; cd ../ensemble-lightbox; git push origin master; cd ../ensemble-social-share; git push origin master",
-    "delete-sourcemaps-all": "find . -name *ensemble*-*.map -type f -delete"
+    "delete-sourcemaps-all": "find . -name *ensemble*-*.map -type f -delete",
+    "docs": "rm -R ./out; ./node_modules/.bin/jsdoc ./ensemble/*.js -r; ./node_modules/.bin/jsdoc ./ensemble-stack-d1/*.js -r; ./node_modules/.bin/jsdoc ./ensemble-modal/src/js/*.js -r; ./node_modules/.bin/jsdoc ./ensemble-lightbox/src/js/*.js -r; ./node_modules/.bin/jsdoc ./ensemble-social-share/src/js/*.js -r"
   },
   "author": "Leonardo Laureti",
   "license": "MIT",
@@ -31,6 +32,7 @@
     "gulp-sourcemaps": "^3.0.0",
     "gulp-tap": "^2.0.0",
     "gulp-terser": "^2.0.1",
+    "jsdoc": "^3.6.6",
     "node-sass": "^5.0.0",
     "regenerator-runtime": "^0.13.7"
   }
