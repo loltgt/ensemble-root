@@ -12,7 +12,8 @@
     "build-compat-css": "BASEPATH=**/ ./node_modules/.bin/gulp compat_css",
     "watch": "BASEPATH=**/ ./node_modules/.bin/gulp watch",
     "demo": "./node_modules/.bin/gulp demo",
-    "clone-deps-all": "cd ./ensemble; rm -R node_modules; cp ../node_modules node_modules; cd ../ensemble-stack-d1; rm -R node_modules; cp ../node_modules node_modules; cd ../ensemble-modal; rm -R node_modules; cp ../node_modules node_modules; cd ../ensemble-lightbox; rm -R node_modules; cp ../node_modules node_modules; cd ../ensemble-social-share; rm -R node_modules; cp ../node_modules node_modules",
+    "clone-deps-all": "cd ./ensemble-modal; rm -R node_modules; cp -R ../node_modules node_modules; cp ../{babel.config.json,gulpfile.js} .; cd ../ensemble-lightbox; rm -R node_modules; cp -R ../node_modules node_modules; cp ../{babel.config.json,gulpfile.js} .; cd ../ensemble-social-share; rm -R node_modules; cp -R ../node_modules node_modules; cp ../{babel.config.json,gulpfile.js} .",
+    "clone-gulpfile-all": "cd ./ensemble-modal; cp ../gulpfile.js .; cd ../ensemble-lightbox; cp ../gulpfile.js .; cd ../ensemble-social-share; cp ../gulpfile.js .",
     "git-push-all": "cd ./ensemble; git push origin master; cd ../ensemble-stack-d1; git push origin master; cd ../ensemble-modal; git push origin master; cd ../ensemble-lightbox; git push origin master; cd ../ensemble-social-share; git push origin master",
     "delete-sourcemaps-all": "find . -name *ensemble*-*.map -type f -delete",
     "docs": "rm -R ./out; ./node_modules/.bin/jsdoc ./ensemble/*.js -r; ./node_modules/.bin/jsdoc ./ensemble-stack-d1/*.js -r; ./node_modules/.bin/jsdoc ./ensemble-modal/src/js/*.js -r; ./node_modules/.bin/jsdoc ./ensemble-lightbox/src/js/*.js -r; ./node_modules/.bin/jsdoc ./ensemble-social-share/src/js/*.js -r"
@@ -34,8 +35,6 @@
     "gulp-sourcemaps": "^3.0.0",
     "gulp-tap": "^2.0.0",
     "gulp-terser": "^2.0.1",
-    "jsdoc": "^3.6.6",
-    "jsdoc-to-markdown": "^7.0.0",
     "node-sass": "^5.0.0",
     "regenerator-runtime": "^0.13.7"
   }

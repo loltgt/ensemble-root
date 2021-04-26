@@ -14,8 +14,32 @@ const sourcemaps = require('gulp-sourcemaps');
 const rollup = require('@rbnlffl/gulp-rollup');
 
 
+const project = {
+  'ensemble-common': {
+    name: 'loltgt/ensemble [common]',
+    version: '0.0.1',
+    link: 'https://github.com/loltgt/ensemble'
+  },
+  'ensemble-modal': {
+    name: 'loltgt/ensemble.Modal',
+    version: '0.0.1',
+    link: 'https://github.com/loltgt/ensemble-modal'
+  },
+  'ensemble-lightbox': {
+    name: 'loltgt/ensemble.Lightbox, loltgt/ensemble.Modal',
+    version: '0.0.1',
+    link: 'https://github.com/loltgt/ensemble-lightbox'
+  },
+  'ensemble-social-share': {
+    name: 'loltgt/ensemble.SocialShare',
+    version: '0.0.1',
+    link: 'https://github.com/loltgt/ensemble-social-share'
+  }
+};
+
+
 const BASEPATH = process.env.BASEPATH || '';
-const TEMP = '.'; // TEMP
+const DSTPATH = '.';
 
 
 
@@ -33,14 +57,58 @@ function _crt(contents) {
   return contents;
 }
 
-// camelCase to hypenated
+// camelCase to hyphenated
 function _cth(name) {
   return name.replace(/([A-Z][^A-Z]+)/g, (cap, w, n) => (n ? '-' : '') + cap.toLowerCase());
 }
 
 
+function _remove_debug(file) {
+  let contents = file.contents.toString();
+  contents = contents.replace(/console\.(log|error)\([^\)]+\);/g, '');
+
+  file.contents = Buffer.from(contents);
+}
+
+function _remove_comments(file) {
+  let contents = file.contents.toString();
+  contents = contents.replace(/(\/[\*]+)(=?[\w\W]+?)(\*\/)/g, '');
+
+  file.contents = Buffer.from(contents);
+}
+
+function _force_inline(file) {
+  let contents = file.contents.toString();
+  contents = contents.replace(/\n/g, '');
+
+  file.contents = Buffer.from(contents);
+}
+
+function _bundle_banner(filename) {
+  let pathName = path.parse(filename).name.replace('.min', '');
+  let projectName;
+
+  if (pathName.indexOf('-compat') != -1) {
+    pathName = pathName.replace('-compat', '');
+    projectName = project[pathName].name + ' (compat)';
+  } else {
+    projectName = project[pathName].name;
+  }
+
+  return '/*!\r\
+ * ' + projectName + '\r\
+ *\r\
+ * @version ' + project[pathName].version + '\r\
+ * @link ' + project[pathName].link + '\r\
+ * @copyright Copyright (C) Leonardo Laureti\r\
+ * @license MIT License\r\
+ */\r';
+}
+
+
+
 function js() {
-  return src([BASEPATH + 'src/js/**/*.js', '!node_modules/**/*.js'])
+  return src([BASEPATH + 'src/js/**/*.js', '!node_modules/**/*.js', '!**/node_modules/**/*.js'])
     // .pipe(sourcemaps.init())
     .pipe(rollup(null, { sourcemap: true, format: 'cjs' }))
     .pipe(tap(function(file) {
@@ -51,16 +119,40 @@ function js() {
       sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
       sourcePath.basename = 'ensemble-' + _cth(sourcePath.basename);
     }))
+    .pipe(tap(function(file) {
+      file.contents = Buffer.from(_bundle_banner(file.basename) + file.contents.toString());
+    }))
     // .pipe(sourcemaps.mapSources(function(sourcePath, file) {
     //   const base = path.relative(file.cwd, file.dirname);
     //   return path.relative(base, sourcePath);
     // }))
     // .pipe(sourcemaps.write('.', { includeContent: false }))
-    .pipe(dest(TEMP));
+    .pipe(dest(DSTPATH));
+}
+
+function js_uglify() {
+  return src([BASEPATH + 'dist/js/**/*.js', '!**/*.min.js', '!node_modules/**/*.js', '!**/node_modules/**/*.js'])
+    // .pipe(sourcemaps.init())
+    .pipe(terser({ keep_classnames: true, keep_fnames: true }))
+    .pipe(rename(function(sourcePath) {
+      sourcePath.extname = '.min' + sourcePath.extname;
+    }))
+    // .pipe(tap(_remove_debug))
+    .pipe(tap(_remove_comments))
+    .pipe(tap(_force_inline))
+    .pipe(tap(function(file) {
+      file.contents = Buffer.from(_bundle_banner(file.basename) + file.contents.toString());
+    }))
+    // .pipe(sourcemaps.mapSources(function(sourcePath, file) {
+    //   const base = path.relative(file.cwd, file.dirname);
+    //   return path.relative(base, sourcePath);
+    // }))
+    // .pipe(sourcemaps.write('.', { includeContent: false }))
+    .pipe(dest(DSTPATH));
 }
 
 function js_compat() {
-  return src([BASEPATH + 'src/js/**/*.js', '!node_modules/**/*.js'])
+  return src([BASEPATH + 'src/js/**/*.js', '!node_modules/**/*.js', '!**/node_modules/**/*.js'])
     // .pipe(sourcemaps.init())
     .pipe(rollup(null, { sourcemap: true, format: 'cjs' }))
     .pipe(tap(function(file) {
@@ -85,31 +177,19 @@ function js_compat() {
       sourcePath.dirname = _dst(sourcePath.dirname, 'src', 'dist');
       sourcePath.basename = 'ensemble-' + _cth(sourcePath.basename) + '-compat';
     }))
-    // .pipe(sourcemaps.mapSources(function(sourcePath, file) {
-    //   const base = path.relative(file.cwd, file.dirname);
-    //   return path.relative(base, sourcePath);
-    // }))
-    // .pipe(sourcemaps.write('.', { includeContent: false }))
-    .pipe(dest(TEMP));
-}
-
-function js_uglify() {
-  return src([BASEPATH + 'dist/js/**/*.js', '!**/*.min.js', '!node_modules/**/*.js'])
-    // .pipe(sourcemaps.init())
-    .pipe(terser())
-    .pipe(rename(function(sourcePath) {
-      sourcePath.extname = '.min' + sourcePath.extname;
+    .pipe(tap(function(file) {
+      file.contents = Buffer.from(_bundle_banner(file.basename) + file.contents.toString());
     }))
     // .pipe(sourcemaps.mapSources(function(sourcePath, file) {
     //   const base = path.relative(file.cwd, file.dirname);
     //   return path.relative(base, sourcePath);
     // }))
     // .pipe(sourcemaps.write('.', { includeContent: false }))
-    .pipe(dest(TEMP));
+    .pipe(dest(DSTPATH));
 }
 
 function css() {
-  return src([BASEPATH + 'src/scss/**/*.scss', '!**/*_compat.scss', '!node_modules/**/*.scss'])
+  return src([BASEPATH + 'src/scss/**/*.scss', '!**/*_compat.scss', '!node_modules/**/*.scss', '!**/node_modules/**/*.scss'])
     // .pipe(sourcemaps.init())
     .pipe(sass({ outputStyle: 'nested' }).on('error', sass.logError))
     .pipe(rename(function(sourcePath) {
@@ -117,16 +197,20 @@ function css() {
       sourcePath.dirname = sourcePath.dirname.replace('scss', 'css');
       sourcePath.basename = 'ensemble-' + sourcePath.basename;
     }))
+    .pipe(tap(_remove_comments))
+    .pipe(tap(function(file) {
+      file.contents = Buffer.from(_bundle_banner(file.basename) + file.contents.toString());
+    }))
     // .pipe(sourcemaps.mapSources(function(sourcePath, file) {
     //   const base = path.relative(file.cwd, file.dirname);
     //   return path.relative(base, sourcePath);
     // }))
     // .pipe(sourcemaps.write('.', { includeContent: false }))
-    .pipe(dest(TEMP));
+    .pipe(dest(DSTPATH));
 }
 
 function css_uglify() {
-  return src([BASEPATH + 'src/scss/**/*.scss', '!**/*_compat.scss', '!node_modules/**/*.scss'])
+  return src([BASEPATH + 'src/scss/**/*.scss', '!**/*_compat.scss', '!node_modules/**/*.scss', '!**/node_modules/**/*.scss'])
     // .pipe(sourcemaps.init())
     .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
     .pipe(rename(function(sourcePath) {
@@ -135,16 +219,21 @@ function css_uglify() {
       sourcePath.basename = 'ensemble-' + sourcePath.basename;
       sourcePath.extname = '.min' + sourcePath.extname;
     }))
+    .pipe(tap(_remove_comments))
+    .pipe(tap(_force_inline))
+    .pipe(tap(function(file) {
+      file.contents = Buffer.from(_bundle_banner(file.basename) + file.contents.toString());
+    }))
     // .pipe(sourcemaps.mapSources(function(sourcePath, file) {
     //   const base = path.relative(file.cwd, file.dirname);
     //   return path.relative(base, sourcePath);
     // }))
     // .pipe(sourcemaps.write('.', { includeContent: false }))
-    .pipe(dest(TEMP));
+    .pipe(dest(DSTPATH));
 }
 
 function css_compat() {
-  return src([BASEPATH + 'src/scss/**/*_compat.scss', '!node_modules/**/*.scss'])
+  return src([BASEPATH + 'src/scss/**/*_compat.scss', '!node_modules/**/*.scss', '!**/node_modules/**/*.scss'])
     // .pipe(sourcemaps.init())
     .pipe(sass({ outputStyle: 'nested' }).on('error', sass.logError))
     .pipe(rename(function(sourcePath) {
@@ -152,16 +241,19 @@ function css_compat() {
       sourcePath.dirname = sourcePath.dirname.replace('scss', 'css');
       sourcePath.basename = 'ensemble-' + sourcePath.basename.replace('_', '-');
     }))
+    .pipe(tap(function(file) {
+      file.contents = Buffer.from(_bundle_banner(file.basename) + file.contents.toString());
+    }))
     // .pipe(sourcemaps.mapSources(function(sourcePath, file) {
     //   const base = path.relative(file.cwd, file.dirname);
     //   return path.relative(base, sourcePath);
     // }))
     // .pipe(sourcemaps.write('.', { includeContent: false }))
-    .pipe(dest(TEMP));
+    .pipe(dest(DSTPATH));
 }
 
 function css_compat_uglify() {
-  return src([BASEPATH + 'src/scss/**/*_compat.scss', '!node_modules/**/*.scss'])
+  return src([BASEPATH + 'src/scss/**/*_compat.scss', '!node_modules/**/*.scss', '!**/node_modules/**/*.scss'])
     // .pipe(sourcemaps.init())
     .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
     .pipe(rename(function(sourcePath) {
@@ -170,12 +262,17 @@ function css_compat_uglify() {
       sourcePath.basename = 'ensemble-' + sourcePath.basename.replace('_', '-');
       sourcePath.extname = '.min' + sourcePath.extname;
     }))
+    .pipe(tap(_remove_comments))
+    .pipe(tap(_force_inline))
+    .pipe(tap(function(file) {
+      file.contents = Buffer.from(_bundle_banner(file.basename) + file.contents.toString());
+    }))
     // .pipe(sourcemaps.mapSources(function(sourcePath, file) {
     //   const base = path.relative(file.cwd, file.dirname);
     //   return path.relative(base, sourcePath);
     // }))
     // .pipe(sourcemaps.write('.', { includeContent: false }))
-    .pipe(dest(TEMP));
+    .pipe(dest(DSTPATH));
 }
 
 function demo_css() {
@@ -187,7 +284,7 @@ function demo_css() {
       sourcePath.basename = 'demo-ensemble-' + sourcePath.basename;
     }))
     // .pipe(sourcemaps.write('.', { includeContent: false, sourceRoot: './ensemble-stack-d1/misc/demo' }))
-    .pipe(dest(TEMP));
+    .pipe(dest(DSTPATH));
 }
 
 function watcher() {
