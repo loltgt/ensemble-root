@@ -1,6 +1,6 @@
 {
   "name": "ensemble-root",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "loltgt ensemble root source tree",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "build-compat-css": "BASEPATH=**/ ./node_modules/.bin/gulp compat_css",
     "watch": "BASEPATH=**/ ./node_modules/.bin/gulp watch",
     "demo": "./node_modules/.bin/gulp demo",
-    "clone-deps-all": "cd ./ensemble-modal; rm -R node_modules; cp -R ../node_modules node_modules; cp ../{babel.config.json,gulpfile.js} .; cd ../ensemble-lightbox; rm -R node_modules; cp -R ../node_modules node_modules; cp ../{babel.config.json,gulpfile.js} .; cd ../ensemble-social-share; rm -R node_modules; cp -R ../node_modules node_modules; cp ../{babel.config.json,gulpfile.js} .",
+    "clone-deps-all": "cd ./ensemble-stack-d1; rm -R node_modules; cp -R ../node_modules node_modules; cd ../ensemble-modal; rm -R node_modules; cp -R ../node_modules node_modules; cp ../{babel.config.json,gulpfile.js} .; cd ../ensemble-lightbox; rm -R node_modules; cp -R ../node_modules node_modules; cp ../{babel.config.json,gulpfile.js} .; cd ../ensemble-social-share; rm -R node_modules; cp -R ../node_modules node_modules; cp ../{babel.config.json,gulpfile.js} .",
     "clone-gulpfile-all": "cd ./ensemble-modal; cp ../gulpfile.js .; cd ../ensemble-lightbox; cp ../gulpfile.js .; cd ../ensemble-social-share; cp ../gulpfile.js .",
     "git-push-all": "cd ./ensemble; git push origin master; cd ../ensemble-stack-d1; git push origin master; cd ../ensemble-modal; git push origin master; cd ../ensemble-lightbox; git push origin master; cd ../ensemble-social-share; git push origin master",
     "delete-sourcemaps-all": "find . -name *ensemble*-*.map -type f -delete",
@@ -31,11 +31,11 @@
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-rename": "^2.0.0",
-    "gulp-sass": "^4.1.0",
+    "gulp-sass": "^5.1.0",
     "gulp-sourcemaps": "^3.0.0",
     "gulp-tap": "^2.0.0",
     "gulp-terser": "^2.0.1",
-    "node-sass": "^5.0.0",
+    "sass": "^1.45.2",
     "regenerator-runtime": "^0.13.7"
   }
 }
