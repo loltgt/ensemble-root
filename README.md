@@ -1,9 +1,8 @@
 # ensemble-root
 
-Root source tree.
+**Deprecated repository**
 
- 
-**beta stage**
+See ensemble repository at: [https://github.com/loltgt/ensemble]
 
  
 
